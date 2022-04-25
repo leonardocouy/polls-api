@@ -21,6 +21,8 @@ defmodule Polls.Accounts do
     Repo.all(User)
   end
 
+  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+
   @doc """
   Gets a single user.
 
@@ -100,5 +102,23 @@ defmodule Polls.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def authenticate_user(email, password) do
+    case get_user_by_email(email) do
+      nil ->
+        Argon2.no_user_verify()
+        {:error, :invalid_credentials}
+
+      user ->
+        validate_user_password(user, password)
+    end
+  end
+
+  defp validate_user_password(%User{encrypted_password: encrypted_password} = user, password) do
+    case Argon2.verify_pass(password, encrypted_password) do
+      true -> {:ok, user}
+      false -> {:error, :unauthorized}
+    end
   end
 end
