@@ -11,7 +11,7 @@ defmodule Polls.AccountsFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        email: "some email",
+        email: "test@email.com",
         encrypted_password: "some encrypted_password",
         name: "some name"
       })

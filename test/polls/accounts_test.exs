@@ -21,10 +21,10 @@ defmodule Polls.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{email: "some email", encrypted_password: "some encrypted_password", name: "some name"}
+      valid_attrs = %{email: "test@email.com", encrypted_password: "some encrypted_password", name: "some name"}
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
-      assert user.email == "some email"
+      assert user.email == "test@email.com"
       assert user.encrypted_password == "some encrypted_password"
       assert user.name == "some name"
     end
@@ -35,10 +35,10 @@ defmodule Polls.AccountsTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{email: "some updated email", encrypted_password: "some updated encrypted_password", name: "some updated name"}
+      update_attrs = %{email: "updated_test@email.com", encrypted_password: "some updated encrypted_password", name: "some updated name"}
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
-      assert user.email == "some updated email"
+      assert user.email == "updated_test@email.com"
       assert user.encrypted_password == "some updated encrypted_password"
       assert user.name == "some updated name"
     end
