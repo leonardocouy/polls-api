@@ -17,6 +17,7 @@ defmodule Polls.Accounts.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password])
+    |> update_change(:email, &sanitize_email/1)
     |> validate_required([:name, :email, :password])
     |> validate_length(:password, min: 6)
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
@@ -30,4 +31,10 @@ defmodule Polls.Accounts.User do
   end
 
   defp put_pass_hash(changeset), do: changeset
+
+  defp sanitize_email(str) do
+    str
+    |> String.trim()
+    |> String.downcase()
+  end
 end
