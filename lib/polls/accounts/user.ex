@@ -17,8 +17,8 @@ defmodule Polls.Accounts.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password])
-    |> update_change(:email, &sanitize_email/1)
     |> validate_required([:name, :email, :password])
+    |> update_change(:email, &sanitize_email/1)
     |> validate_length(:password, min: 6)
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> unsafe_validate_unique(:email, Polls.Repo)
