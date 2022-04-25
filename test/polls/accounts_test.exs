@@ -2,71 +2,120 @@ defmodule Polls.AccountsTest do
   use Polls.DataCase
 
   alias Polls.Accounts
+  alias Polls.Accounts.User
 
-  describe "users" do
-    alias Polls.Accounts.User
+  import Polls.AccountsFixtures
 
-    import Polls.AccountsFixtures
+  @invalid_attrs %{email: nil, password: nil, name: nil}
 
-    @invalid_attrs %{email: nil, encrypted_password: nil, name: nil}
+  describe "list_users/0" do
+    test "returns all users" do
+      %User{id: user_id} = user_fixture()
 
-    test "list_users/0 returns all users" do
-      user = user_fixture()
-      assert Accounts.list_users() == [user]
+      assert [%{id: ^user_id}] = Accounts.list_users()
     end
+  end
 
-    test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
-      assert Accounts.get_user!(user.id) == user
+  describe "get_user_by_email/1" do
+    test "returns the user with given email" do
+      %User{id: user_id, email: email} = user_fixture()
+
+      assert %{id: ^user_id} = Accounts.get_user_by_email(email)
     end
+  end
 
-    test "create_user/1 with valid data creates a user" do
+  describe "get_user!/1" do
+    test "returns the user with given id" do
+      %User{id: user_id} = user_fixture()
+
+      assert %{id: ^user_id} = Accounts.get_user!(user_id)
+    end
+  end
+
+  describe "create_user/1" do
+    test "when the attrs are valid, creates a user" do
       valid_attrs = %{
         email: "test@email.com",
-        encrypted_password: "some encrypted_password",
+        password: "123456",
         name: "some name"
       }
 
-      assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
-      assert user.email == "test@email.com"
-      assert user.encrypted_password == "some encrypted_password"
-      assert user.name == "some name"
+      assert {
+        :ok,
+        %User{
+          email: "test@email.com",
+          password: "123456",
+          name: "some name"
+        } = user
+      } = Accounts.create_user(valid_attrs)
+      assert user.encrypted_password != nil
     end
 
-    test "create_user/1 with invalid data returns error changeset" do
+    test "when the attrs are invalid, returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
     end
+  end
 
-    test "update_user/2 with valid data updates the user" do
+  describe "update_user/2" do
+    test "when attrs are valid, updates the user" do
       user = user_fixture()
-
       update_attrs = %{
         email: "updated_test@email.com",
-        encrypted_password: "some updated encrypted_password",
-        name: "some updated name"
+        password: "777777",
+        name: "updated"
       }
 
-      assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
-      assert user.email == "updated_test@email.com"
-      assert user.encrypted_password == "some updated encrypted_password"
-      assert user.name == "some updated name"
+      assert {
+        :ok,
+        %User{
+          email: "updated_test@email.com",
+          password: "777777",
+          name: "updated"
+        } = user
+      } = Accounts.update_user(user, update_attrs)
+      assert user.password != "123456"
     end
 
-    test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+    test "when attrs are invalid, returns error changeset" do
+      (%{id: user_id} = user) = user_fixture()
+
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
-      assert user == Accounts.get_user!(user.id)
+      assert %{id: ^user_id} = Accounts.get_user!(user_id)
     end
+  end
 
-    test "delete_user/1 deletes the user" do
+  describe "delete_user/1" do
+    test "deletes the user" do
       user = user_fixture()
+
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
     end
+  end
 
-    test "change_user/1 returns a user changeset" do
+  describe "change_user/1" do
+    test "returns a changeset" do
       user = user_fixture()
+
       assert %Ecto.Changeset{} = Accounts.change_user(user)
+    end
+  end
+
+  describe "authenticate_user/2" do
+    test "when given credentials are valid, returns the user" do
+      %User{id: user_id, email: email} = user_fixture()
+
+      assert {:ok, %User{id: ^user_id}} = Accounts.authenticate_user(email, "123456")
+    end
+
+    test "when given email exists but the password is invalid, returns unauthorized error" do
+      %User{email: email} = user_fixture()
+
+      assert {:error, :unauthorized} = Accounts.authenticate_user(email, "invalid_password")
+    end
+
+    test "when given email does not exists, returns invalid credentials error" do
+      assert {:error, :invalid_credentials} = Accounts.authenticate_user("invalid_email", "123456")
     end
   end
 end

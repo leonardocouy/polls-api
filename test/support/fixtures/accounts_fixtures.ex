@@ -12,7 +12,7 @@ defmodule Polls.AccountsFixtures do
       attrs
       |> Enum.into(%{
         email: "test@email.com",
-        encrypted_password: "some encrypted_password",
+        password: "123456",
         name: "some name"
       })
       |> Polls.Accounts.create_user()

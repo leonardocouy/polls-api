@@ -21,6 +21,15 @@ defmodule Polls.Accounts do
     Repo.all(User)
   end
 
+  @doc """
+  Gets a single user by email
+
+  ## Examples
+
+      iex> get_user('test.com')
+      [%User{}, ...]
+
+  """
   def get_user_by_email(email), do: Repo.get_by(User, email: email)
 
   @doc """
@@ -104,6 +113,21 @@ defmodule Polls.Accounts do
     User.changeset(user, attrs)
   end
 
+  @doc """
+  Returns if given email and password are valid
+
+  ## Examples
+
+
+      iex> authenticate("email@email.com", "correct_password")
+      {:ok, %User{}}
+
+      iex> authenticate("inexistent_email@email.com", "correct_password")
+      {:error, :invalid_credentials}
+
+      iex> authenticate("email@email.com", "invalid_password")
+      {:error, :unauthorized}
+  """
   def authenticate_user(email, password) do
     case get_user_by_email(email) do
       nil ->
