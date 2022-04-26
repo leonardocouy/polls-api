@@ -11,7 +11,7 @@ defmodule PollsWeb.SessionsController do
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:created)
-      |> text(token)
+      |> render("register.json", user: user, token: token)
     end
   end
 
@@ -20,7 +20,7 @@ defmodule PollsWeb.SessionsController do
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:ok)
-      |> text(token)
+      |> render("sign_in.json", token: token)
     end
   end
 end

@@ -10,7 +10,11 @@ defmodule PollsWeb.SessionsRequestTest do
       result = post(conn, Routes.sessions_path(conn, :register), params)
 
       assert result.status == 201
-      assert result.resp_body != ""
+      assert %{
+        "message" => "User created!",
+        "user" => %{"id" => _id, "name" => "Test", "email" => "test@email.com"},
+        "token" => _token
+      } = json_response(result, 201)
     end
 
     # test "when params is invalid, returns bad request with errors", %{conn: conn} do
@@ -31,7 +35,7 @@ defmodule PollsWeb.SessionsRequestTest do
       result = post(conn, Routes.sessions_path(conn, :sign_in), params)
 
       assert result.status == 200
-      assert result.resp_body != ""
+      assert %{"token" => _token} = json_response(result, 200)
     end
 
     test "when the user password is wrong, returns 401", %{conn: conn} do
