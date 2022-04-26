@@ -8,7 +8,7 @@ defmodule PollsWeb.SessionsController do
 
   def register(conn, params) do
     with {:ok, user} <- Accounts.create_user(params),
-         {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
+         token <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:created)
       |> render("register.json", user: user, token: token)
@@ -17,7 +17,7 @@ defmodule PollsWeb.SessionsController do
 
   def sign_in(conn, %{"email" => email, "password" => password}) do
     with {:ok, user} <- Accounts.authenticate_user(email, password),
-         {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
+         token <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:ok)
       |> render("sign_in.json", token: token)

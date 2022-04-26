@@ -13,7 +13,11 @@ defmodule PollsWeb.SessionsRequestTest do
       assert %{
         "message" => "User created!",
         "user" => %{"id" => _id, "name" => "Test", "email" => "test@email.com"},
-        "token" => _token
+        "token" => %{
+          "access_token" => _access_token,
+          "expires_in" => _expires_in,
+          "token_type" => "Bearer"
+        }
       } = json_response(result, 201)
     end
 
@@ -35,7 +39,13 @@ defmodule PollsWeb.SessionsRequestTest do
       result = post(conn, Routes.sessions_path(conn, :sign_in), params)
 
       assert result.status == 200
-      assert %{"token" => _token} = json_response(result, 200)
+      assert %{
+        "token" => %{
+          "access_token" => _access_token,
+          "expires_in" => _expires_in,
+          "token_type" => "Bearer"
+        }
+      } = json_response(result, 200)
     end
 
     test "when the user password is wrong, returns 401", %{conn: conn} do

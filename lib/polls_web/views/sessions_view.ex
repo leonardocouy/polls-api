@@ -9,11 +9,15 @@ defmodule PollsWeb.SessionsView do
         name: user.name,
         email: user.email
       },
-      token: token
+      token: build_token_response(token)
     }
   end
 
   def render("sign_in.json", %{token: token}) do
-    %{token: token}
+    %{token: build_token_response(token)}
+  end
+
+  defp build_token_response({:ok, token, %{"exp" => exp}}) do
+    %{access_token: token, token_type: "Bearer", expires_in: exp}
   end
 end
