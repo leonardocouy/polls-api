@@ -114,8 +114,8 @@ defmodule Polls.AccountsTest do
       assert {:error, :unauthorized} = Accounts.authenticate_user(email, "invalid_password")
     end
 
-    test "when given email does not exists, returns invalid credentials error" do
-      assert {:error, :invalid_credentials} = Accounts.authenticate_user("invalid_email", "123456")
+    test "when given email does not exists, returns user not found error" do
+      assert {:error, {:not_found, "User not found"}} = Accounts.authenticate_user("invalid_email", "123456")
     end
   end
 end

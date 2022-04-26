@@ -123,7 +123,7 @@ defmodule Polls.Accounts do
       {:ok, %User{}}
 
       iex> authenticate("inexistent_email@email.com", "correct_password")
-      {:error, :invalid_credentials}
+      {:error, {:not_found, "User not found"}}
 
       iex> authenticate("email@email.com", "invalid_password")
       {:error, :unauthorized}
@@ -132,7 +132,7 @@ defmodule Polls.Accounts do
     case get_user_by_email(email) do
       nil ->
         Argon2.no_user_verify()
-        {:error, :invalid_credentials}
+        {:error, {:not_found, "User not found"}}
 
       user ->
         validate_user_password(user, password)

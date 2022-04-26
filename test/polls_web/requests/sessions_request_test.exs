@@ -21,14 +21,20 @@ defmodule PollsWeb.SessionsRequestTest do
       } = json_response(result, 201)
     end
 
-    # test "when params is invalid, returns bad request with errors", %{conn: conn} do
-    #   params = %{}
+    test "when params is invalid, returns bad request with errors", %{conn: conn} do
+      params = %{}
 
-    #   result = post(conn, Routes.sessions_path(conn, :register), params)
+      result = post(conn, Routes.sessions_path(conn, :register), params)
 
-    #   assert result.status == 400
-    #   # assert json_response(result, 400) != %{}
-    # end
+      assert result.status == 400
+      assert json_response(result, 400) == %{
+        "message" => %{
+          "email" => ["can't be blank"],
+          "name" => ["can't be blank"],
+          "password" => ["can't be blank"]
+        }
+      }
+    end
   end
 
   describe "POST /sign_in" do
