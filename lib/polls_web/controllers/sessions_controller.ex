@@ -4,6 +4,8 @@ defmodule PollsWeb.SessionsController do
   alias Polls.Accounts
   alias Polls.Guardian
 
+  action_fallback PollsWeb.FallbackController
+
   def register(conn, params) do
     with {:ok, user} <- Accounts.create_user(params),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do

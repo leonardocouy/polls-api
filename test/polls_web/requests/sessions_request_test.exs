@@ -34,13 +34,13 @@ defmodule PollsWeb.SessionsRequestTest do
       assert result.resp_body != ""
     end
 
-    # test "when params is invalid, returns bad request with errors", %{conn: conn} do
-    #   params = %{}
+    test "when the user password is wrong, returns 401", %{conn: conn} do
+      user_fixture()
+      params = %{email: "test@email.com", password: "123x456"}
 
-    #   result = post(conn, Routes.sessions_path(conn, :register), params)
+      result = post(conn, Routes.sessions_path(conn, :sign_in), params)
 
-    #   assert result.status == 400
-    #   # assert json_response(result, 400) != %{}
-    # end
+      assert %Plug.Conn{status: 401} = result
+    end
   end
 end
