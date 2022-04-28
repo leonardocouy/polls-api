@@ -6,6 +6,7 @@ defmodule Polls.Core do
   import Ecto.Query, warn: false
   alias Polls.Repo
 
+  alias Polls.Core.Option, as: PollOption
   alias Polls.Core.Poll
 
   def list_polls do
@@ -39,31 +40,29 @@ defmodule Polls.Core do
     Poll.changeset(poll, attrs)
   end
 
-  alias Polls.Core.Option
-
-  def list_options do
+  def list_poll_options do
     Repo.all(Option)
   end
 
-  def get_option!(id), do: Repo.get!(Option, id)
+  def get_poll_option!(id), do: Repo.get!(Option, id)
 
-  def create_option(attrs \\ %{}) do
-    %Option{}
-    |> Option.changeset(attrs)
+  def create_poll_option(attrs \\ %{}) do
+    %PollOption{}
+    |> PollOption.changeset(attrs)
     |> Repo.insert()
   end
 
-  def update_option(%Option{} = option, attrs) do
+  def update_poll_option(%PollOption{} = option, attrs) do
     option
-    |> Option.changeset(attrs)
+    |> PollOption.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_option(%Option{} = option) do
+  def delete_poll_option(%PollOption{} = option) do
     Repo.delete(option)
   end
 
-  def change_option(%Option{} = option, attrs \\ %{}) do
-    Option.changeset(option, attrs)
+  def change_poll_option(%PollOption{} = option, attrs \\ %{}) do
+    PollOption.changeset(option, attrs)
   end
 end
