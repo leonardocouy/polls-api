@@ -7,7 +7,7 @@ defmodule PollsWeb.PollsController do
   action_fallback PollsWeb.FallbackController
 
   def index(conn, _params) do
-    polls = Core.list_polls()
+    polls = Core.list_polls([:owner, :options])
 
     render(conn, "index.json", polls: polls)
   end

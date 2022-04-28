@@ -9,9 +9,10 @@ defmodule Polls.Core do
   alias Polls.Core.Option, as: PollOption
   alias Polls.Core.Poll
 
-  def list_polls do
-    Repo.all(Poll)
-    |> Repo.preload([:owner, :options])
+  def list_polls(preloads \\ []) do
+    Poll
+    |> preload(^preloads)
+    |> Repo.all()
   end
 
   def get_poll!(id), do: Repo.get!(Poll, id) |> Repo.preload([:owner, :options])
