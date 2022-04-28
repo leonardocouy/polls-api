@@ -11,7 +11,9 @@ defmodule PollsWeb.Router do
     post "/register", SessionsController, :register
     post "/sign_in", SessionsController, :sign_in
 
-    resources "/polls", PollsController, except: [:new, :edit]
+    resources "/polls", PollsController, except: [:new, :edit], name: :poll do
+      resources "/options", Polls.OptionsController, only: [:index], name: :option
+    end
   end
 
   # Enables LiveDashboard only for development

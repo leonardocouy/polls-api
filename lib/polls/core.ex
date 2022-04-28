@@ -42,10 +42,16 @@ defmodule Polls.Core do
   end
 
   def list_poll_options do
-    Repo.all(Option)
+    Repo.all(PollOption)
   end
 
-  def get_poll_option!(id), do: Repo.get!(Option, id)
+  def list_poll_options_by_poll_id(poll_id) do
+    PollOption
+    |> where(poll_id: ^poll_id)
+    |> Repo.all()
+  end
+
+  def get_poll_option!(id), do: Repo.get!(PollOption, id)
 
   def create_poll_option(attrs \\ %{}) do
     %PollOption{}
