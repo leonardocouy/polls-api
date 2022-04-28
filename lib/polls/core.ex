@@ -8,6 +8,7 @@ defmodule Polls.Core do
 
   alias Polls.Core.Option, as: PollOption
   alias Polls.Core.Poll
+  alias Polls.Core.Vote, as: PollOptionVote
 
   def list_polls(preloads \\ []) do
     Poll
@@ -71,5 +72,15 @@ defmodule Polls.Core do
 
   def change_poll_option(%PollOption{} = option, attrs \\ %{}) do
     PollOption.changeset(option, attrs)
+  end
+
+  def create_vote(attrs \\ %{}) do
+    %PollOptionVote{}
+    |> PollOptionVote.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def change_vote(%PollOptionVote{} = vote, attrs \\ %{}) do
+    PollOptionVote.changeset(vote, attrs)
   end
 end
