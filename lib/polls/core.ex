@@ -19,6 +19,7 @@ defmodule Polls.Core do
   """
   def list_polls do
     Repo.all(Poll)
+    |> Repo.preload([:owner, :options])
   end
 
   @doc """
@@ -35,7 +36,7 @@ defmodule Polls.Core do
       ** (Ecto.NoResultsError)
 
   """
-  def get_poll!(id), do: Repo.get!(Poll, id)
+  def get_poll!(id), do: Repo.get!(Poll, id) |> Repo.preload([:owner, :options])
 
   @doc """
   Creates a poll.
@@ -53,6 +54,10 @@ defmodule Polls.Core do
     %Poll{}
     |> Poll.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, %Poll{} = poll} -> {:ok, Repo.preload(poll, [:owner, :options])}
+      error -> error
+    end
   end
 
   @doc """

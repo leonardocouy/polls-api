@@ -7,8 +7,11 @@ defmodule PollsWeb.Router do
 
   scope "/api", PollsWeb do
     pipe_through :api
+
     post "/register", SessionsController, :register
     post "/sign_in", SessionsController, :sign_in
+
+    resources "/polls", PollsController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development

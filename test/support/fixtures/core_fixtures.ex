@@ -4,23 +4,31 @@ defmodule Polls.CoreFixtures do
   entities via the `Polls.Core` context.
   """
 
-  @doc """
-  Generate a poll.
-  """
+  alias Polls.AccountsFixtures
+
   def poll_fixture(attrs \\ %{}) do
     {:ok, poll} =
-      attrs
+      build_poll_attrs(attrs)
+      |> Polls.Core.create_poll()
+
+    poll
+  end
+
+  def poll_with_options_fixture(attrs \\ %{}) do
+    {:ok, poll} =
+      build_poll_attrs(attrs)
       |> Enum.into(%{
-        question: "some question"
+        options: [
+          %{value: "Pizza"},
+          %{value: "Salad"},
+          %{value: "Chocolate"}
+        ]
       })
       |> Polls.Core.create_poll()
 
     poll
   end
 
-  @doc """
-  Generate a option.
-  """
   def option_fixture(attrs \\ %{}) do
     {:ok, option} =
       attrs
@@ -30,5 +38,15 @@ defmodule Polls.CoreFixtures do
       |> Polls.Core.create_option()
 
     option
+  end
+
+  defp build_poll_attrs(attrs \\ %{}) do
+    %{id: user_id} = AccountsFixtures.user_fixture()
+
+    attrs
+    |> Enum.into(%{
+      question: "Which one is your favourite food?",
+      owner_id: user_id
+    })
   end
 end
