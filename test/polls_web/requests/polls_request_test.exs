@@ -5,8 +5,10 @@ defmodule PollsWeb.PollsRequestTest do
   import Polls.AccountsFixtures
 
   describe "GET /polls" do
-    test "returns a list containing all polls including the owner and options", %{conn: conn} do
-      (%{id: id, question: question, owner: %{id: owner_id}} = poll) = poll_with_options_fixture()
+    setup [:create_poll]
+
+    test "returns a list containing all polls including the owner and options", %{conn: conn, poll: poll} do
+      %{id: id, question: question, owner: %{id: owner_id}} = poll
 
       result =
         conn
@@ -28,6 +30,12 @@ defmodule PollsWeb.PollsRequestTest do
           "updated_at" => _
         }
       ] = json_response(result, 200)["data"]
+    end
+
+    test "when the user is not authenticated, returns 401", %{conn: conn} do
+      result = post(conn, Routes.polls_path(conn, :index))
+
+      assert %Plug.Conn{status: 401} = result
     end
   end
 
@@ -80,11 +88,19 @@ defmodule PollsWeb.PollsRequestTest do
         }
       }
     end
+
+    test "when the user is not authenticated, returns 401", %{conn: conn} do
+      result = post(conn, Routes.polls_path(conn, :create), poll: %{})
+
+      assert %Plug.Conn{status: 401} = result
+    end
   end
 
   describe "PUT /polls/:id" do
-    test "when params is valid, returns the updated poll with 200", %{conn: conn} do
-      (%{id: poll_id} = poll) = poll_with_options_fixture()
+    setup [:create_poll]
+
+    test "when params is valid, returns the updated poll with 200", %{conn: conn, poll: poll} do
+      %{id: poll_id} = poll
       update_attrs = %{
         question: "Which one is the most expensive food?",
       }
@@ -109,8 +125,8 @@ defmodule PollsWeb.PollsRequestTest do
       } = json_response(result, 200)["data"]
     end
 
-    test "when params is invalid, returns bad request with errors", %{conn: conn} do
-      (%{id: poll_id} = poll) = poll_with_options_fixture()
+    test "when params is invalid, returns bad request with errors", %{conn: conn, poll: poll} do
+      %{id: poll_id} = poll
       update_attrs = %{question: nil}
 
       result =
@@ -125,11 +141,19 @@ defmodule PollsWeb.PollsRequestTest do
         }
       }
     end
+
+    test "when the user is not authenticated, returns 401", %{conn: conn, poll: %{id: poll_id}} do
+      result = put(conn, Routes.polls_path(conn, :update, poll_id), %{})
+
+      assert %Plug.Conn{status: 401} = result
+    end
   end
 
   describe "DELETE /polls/:id" do
-    test "deletes chosen poll", %{conn: conn} do
-      (%{id: poll_id} = poll) = poll_with_options_fixture()
+    setup [:create_poll]
+
+    test "deletes chosen poll", %{conn: conn, poll: poll} do
+      %{id: poll_id} = poll
 
       conn = conn
         |> login(poll.owner)
@@ -137,5 +161,15 @@ defmodule PollsWeb.PollsRequestTest do
 
       assert response(conn, 204)
     end
+
+    test "when the user is not authenticated, returns 401", %{conn: conn, poll: %{id: poll_id}} do
+      result = delete(conn, Routes.polls_path(conn, :delete, poll_id))
+
+      assert %Plug.Conn{status: 401} = result
+    end
+  end
+
+  defp create_poll(_ctx) do
+    [poll: poll_with_options_fixture()]
   end
 end
