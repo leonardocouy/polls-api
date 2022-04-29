@@ -13,10 +13,15 @@ defmodule Polls.Core do
   def list_polls(preloads \\ []) do
     Poll
     |> preload(^preloads)
+    |> preload([options: ^options_query()])
     |> Repo.all()
   end
 
-  def get_poll!(id), do: Repo.get!(Poll, id) |> Repo.preload([:owner, :options])
+  def get_poll!(id) do
+    Poll
+    |> Repo.get!(id)
+    |> Repo.preload([:owner, options: options_query()])
+  end
 
   def create_poll(attrs \\ %{}) do
     %Poll{}
@@ -82,5 +87,12 @@ defmodule Polls.Core do
 
   def change_vote(%PollOptionVote{} = vote, attrs \\ %{}) do
     PollOptionVote.changeset(vote, attrs)
+  end
+
+  defp options_query do
+    from o in PollOption,
+      left_join: v in assoc(o, :votes),
+      group_by: o.id,
+      select_merge: %{vote_count: count(v.id)}
   end
 end

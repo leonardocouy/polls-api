@@ -34,7 +34,8 @@ defmodule PollsWeb.PollsView do
     |> Enum.map(fn opt ->
       %{
         id: opt.id,
-        value: opt.value
+        value: opt.value,
+        vote_count: opt.vote_count
       }
     end)
   end
