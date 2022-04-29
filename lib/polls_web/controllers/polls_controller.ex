@@ -26,18 +26,24 @@ defmodule PollsWeb.PollsController do
   end
 
   def update(conn, %{"id" => id, "poll" => %{"question" => question}}) do
+    user = conn.assigns.current_user
     poll = Core.get_poll!(id)
     update_params = %{question: question}
 
-    with {:ok, %Poll{} = poll} <- Core.update_poll(poll, update_params) do
+    with :ok <- Bodyguard.permit(Polls.PollPolicy, :update, user, poll),
+         {:ok, %Poll{} = poll} <- Core.update_poll(poll, update_params)
+    do
       render(conn, "show.json", poll: poll)
     end
   end
 
   def delete(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
     poll = Core.get_poll!(id)
 
-    with {:ok, %Poll{}} <- Core.delete_poll(poll) do
+    with :ok <- Bodyguard.permit(Polls.PollPolicy, :delete, user, poll),
+        {:ok, %Poll{}} <- Core.delete_poll(poll)
+    do
       send_resp(conn, :no_content, "")
     end
   end

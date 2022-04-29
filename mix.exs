@@ -46,7 +46,8 @@ defmodule Polls.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:argon2_elixir, "~> 3.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:guardian, "~> 2.0"}
+      {:guardian, "~> 2.0"},
+      {:bodyguard, "~> 2.4"}
     ]
   end
 
