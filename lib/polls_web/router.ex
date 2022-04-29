@@ -12,7 +12,7 @@ defmodule PollsWeb.Router do
     post "/sign_in", SessionsController, :sign_in
 
     resources "/polls", PollsController, except: [:new, :edit], name: :poll do
-      post "vote", Polls.VotesController, :create
+      resources "/vote", Polls.VotesController, only: [:create], singleton: true
       resources "/options", Polls.OptionsController, only: [:index], name: :option
     end
   end
