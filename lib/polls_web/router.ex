@@ -7,6 +7,7 @@ defmodule PollsWeb.Router do
 
   pipeline :auth do
     plug Polls.Auth.Pipeline
+    plug Polls.CurrentUserPlug
   end
 
   scope "/api", PollsWeb do

@@ -19,7 +19,7 @@ defmodule Polls.Auth.Guardian do
   Get `User` struct from its string form - JWT subject
   """
   def resource_from_claims(%{"sub" => subject}) do
-    subject
-    |> Accounts.get_user!()
+    user = Accounts.get_user!(subject)
+    {:ok, user}
   end
 end
