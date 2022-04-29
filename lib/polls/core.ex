@@ -93,6 +93,7 @@ defmodule Polls.Core do
     from o in PollOption,
       left_join: v in assoc(o, :votes),
       group_by: o.id,
+      order_by: o.id,
       select_merge: %{vote_count: count(v.id)}
   end
 end

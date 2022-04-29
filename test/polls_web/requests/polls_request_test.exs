@@ -6,9 +6,12 @@ defmodule PollsWeb.PollsRequestTest do
 
   describe "GET /polls" do
     test "returns a list containing all polls including the owner and options", %{conn: conn} do
-      %{id: id, question: question, owner: %{id: owner_id}} = poll_with_options_fixture()
+      (%{id: id, question: question, owner: %{id: owner_id}} = poll) = poll_with_options_fixture()
 
-      result = get(conn, Routes.polls_path(conn, :index))
+      result =
+        conn
+        |> login(poll.owner)
+        |> get(Routes.polls_path(conn, :index))
 
       assert result.status == 200
       assert [
@@ -16,9 +19,9 @@ defmodule PollsWeb.PollsRequestTest do
           "created_at" => _,
           "id" => ^id,
           "options" => [
-            %{"id" => _, "value" => "Pizza"},
-            %{"id" => _, "value" => "Salad"},
-            %{"id" => _, "value" => "Chocolate"}
+            %{"id" => _, "value" => "Pizza", "vote_count" => 0},
+            %{"id" => _, "value" => "Salad", "vote_count" => 0},
+            %{"id" => _, "value" => "Chocolate", "vote_count" => 0}
           ],
           "owner" => %{"id" => ^owner_id, "name" => "some name"},
           "question" => ^question,
@@ -41,7 +44,10 @@ defmodule PollsWeb.PollsRequestTest do
         ]
       }
 
-      result = post(conn, Routes.polls_path(conn, :create), poll: create_attrs)
+      result =
+        conn
+        |> login(user)
+        |> post(Routes.polls_path(conn, :create), poll: create_attrs)
 
       assert result.status == 201
       assert %{
@@ -59,7 +65,12 @@ defmodule PollsWeb.PollsRequestTest do
     end
 
     test "when params is invalid, returns bad request with errors", %{conn: conn} do
-      result = post(conn, Routes.polls_path(conn, :create), poll: %{})
+      user = user_fixture()
+
+      result =
+        conn
+        |> login(user)
+        |> post(Routes.polls_path(conn, :create), poll: %{})
 
       assert result.status == 400
       assert json_response(result, 400) == %{
@@ -73,12 +84,15 @@ defmodule PollsWeb.PollsRequestTest do
 
   describe "PUT /polls/:id" do
     test "when params is valid, returns the updated poll with 200", %{conn: conn} do
-      %{id: poll_id, question: question} = poll_with_options_fixture()
+      (%{id: poll_id} = poll) = poll_with_options_fixture()
       update_attrs = %{
         question: "Which one is the most expensive food?",
       }
 
-      result = put(conn, Routes.polls_path(conn, :update, poll_id), poll: update_attrs)
+      result =
+        conn
+        |> login(poll.owner)
+        |> put(Routes.polls_path(conn, :update, poll_id), poll: update_attrs)
 
       assert result.status == 200
       assert %{
@@ -96,10 +110,13 @@ defmodule PollsWeb.PollsRequestTest do
     end
 
     test "when params is invalid, returns bad request with errors", %{conn: conn} do
-      %{id: poll_id} = poll_with_options_fixture()
+      (%{id: poll_id} = poll) = poll_with_options_fixture()
       update_attrs = %{question: nil}
 
-      result = put(conn, Routes.polls_path(conn, :update, poll_id), poll: update_attrs)
+      result =
+        conn
+        |> login(poll.owner)
+        |> put(Routes.polls_path(conn, :update, poll_id), poll: update_attrs)
 
       assert result.status == 400
       assert json_response(result, 400) == %{
@@ -112,9 +129,12 @@ defmodule PollsWeb.PollsRequestTest do
 
   describe "DELETE /polls/:id" do
     test "deletes chosen poll", %{conn: conn} do
-      %{id: poll_id} = poll_with_options_fixture()
+      (%{id: poll_id} = poll) = poll_with_options_fixture()
 
-      conn = delete(conn, Routes.polls_path(conn, :delete, poll_id))
+      conn = conn
+        |> login(poll.owner)
+        |> delete(Routes.polls_path(conn, :delete, poll_id))
+
       assert response(conn, 204)
     end
   end

@@ -17,6 +17,8 @@ defmodule PollsWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Polls.Auth
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -28,6 +30,13 @@ defmodule PollsWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint PollsWeb.Endpoint
+
+      def login(conn, user) do
+        {:ok, token, _} = Auth.Guardian.encode_and_sign(user)
+
+        conn
+        |> put_req_header("authorization", "Bearer #{token}")
+      end
     end
   end
 
