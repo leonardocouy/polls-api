@@ -19,9 +19,8 @@ defmodule PollsWeb.Router do
   scope "/api", PollsWeb do
     pipe_through [:api, :auth]
 
-    resources "/polls", PollsController, except: [:new, :edit], name: :poll do
+    resources "/polls", PollsController, except: [:new, :edit] do
       resources "/vote", Polls.VotesController, only: [:create], singleton: true
-      resources "/options", Polls.OptionsController, only: [:index], name: :option
     end
   end
 
