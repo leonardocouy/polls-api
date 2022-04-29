@@ -2,7 +2,7 @@ defmodule PollsWeb.SessionsController do
   use PollsWeb, :controller
 
   alias Polls.Accounts
-  alias Polls.Guardian
+  alias Polls.Auth.Guardian
 
   action_fallback PollsWeb.FallbackController
 

@@ -1,4 +1,4 @@
-defmodule Polls.Guardian do
+defmodule Polls.Auth.Guardian do
   @moduledoc false
 
   use Guardian, otp_app: :polls

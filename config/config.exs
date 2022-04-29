@@ -29,6 +29,6 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
 
-config :polls, Polls.Guardian,
+config :polls, Polls.Auth.Guardian,
   issuer: "polls",
   secret_key: "EyiPlVcnyRnWIXgddCdHJa96M9dI5wsBDLCOZR5WpPnY4BUhZtCRdgUCRmgpixoi"
