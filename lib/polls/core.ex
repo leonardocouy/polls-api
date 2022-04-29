@@ -13,7 +13,7 @@ defmodule Polls.Core do
   def list_polls(preloads \\ []) do
     Poll
     |> preload(^preloads)
-    |> preload([options: ^options_query()])
+    |> preload(options: ^options_query())
     |> Repo.all()
   end
 
