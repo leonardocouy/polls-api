@@ -6,7 +6,7 @@ defmodule PollsWeb.Polls.VotesController do
 
   action_fallback PollsWeb.FallbackController
 
-  def create(conn, %{"poll_id" => _, "vote" => vote_params}) do
+  def create(conn, %{"polls_id" => _, "vote" => vote_params}) do
     with {:ok, %PollOptionVote{}} <- Core.create_vote(vote_params) do
       conn
       |> put_status(:created)
