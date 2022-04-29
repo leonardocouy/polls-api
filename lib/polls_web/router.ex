@@ -5,11 +5,19 @@ defmodule PollsWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug Polls.Auth.Pipeline
+  end
+
   scope "/api", PollsWeb do
     pipe_through :api
 
     post "/register", SessionsController, :register
     post "/sign_in", SessionsController, :sign_in
+  end
+
+  scope "/api", PollsWeb do
+    pipe_through [:api, :auth]
 
     resources "/polls", PollsController, except: [:new, :edit], name: :poll do
       resources "/vote", Polls.VotesController, only: [:create], singleton: true

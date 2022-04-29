@@ -32,3 +32,7 @@ import_config "#{config_env()}.exs"
 config :polls, Polls.Auth.Guardian,
   issuer: "polls",
   secret_key: "EyiPlVcnyRnWIXgddCdHJa96M9dI5wsBDLCOZR5WpPnY4BUhZtCRdgUCRmgpixoi"
+
+config :polls, Polls.Auth.Pipeline,
+  module: Polls.Auth.Guardian,
+  error_handler: Polls.Auth.ErrorHandler
