@@ -2,8 +2,8 @@ defmodule Polls.Core.Vote do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Polls.Accounts.User
   alias Polls.Core.Option
-  alias Polls.Core.User
 
   schema "votes" do
     belongs_to(:option, Option, on_replace: :delete)
